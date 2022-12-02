@@ -1,5 +1,3 @@
-import java.io.File
-
 fun main() {
     fun part1(calInput: String): Int {
         val calorieChunks = calInput.split("\n\n").map { calPartial ->
@@ -15,7 +13,7 @@ fun main() {
         return calorieChunks.sorted().takeLast(3).sum()
     }
 
-    val input = File("src/Day01Input.txt").readText()
+    val input = readInput("Day01Input")
     println(part1(input))
     println(part2(input))
 }
