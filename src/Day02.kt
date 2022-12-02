@@ -1,34 +1,43 @@
-const val OPPONENT_ROCK = "A"; const val OPPONENT_PAPER = "B"; const val OPPONENT_SCISSOR = "C"
-const val ROCK = "Y"; const val PAPER = "X"; const val SCISSOR = "Z"
-
-enum class HAND(val score: Int) {
-    A(1),
-    B(2),
-    C(3),
-    Y(1),
-    X(2),
-    Z(3),
-}
-
-private fun roundScore(roundString: String): Int {
-    val roundHands = Pair(roundString.substringBefore(' ').trim(), roundString.substringAfter(' '))
-    val theirHand = roundHands.first; val yourHand = roundHands.second
-    return HAND.valueOf(yourHand).score + outcome(theirHand, yourHand)
-}
-
-private fun outcome(theirHand: String, yourHand: String): Int {
-    if (theirHand == OPPONENT_ROCK && yourHand == SCISSOR) return 0
-    val score = HAND.valueOf(yourHand).score - HAND.valueOf(theirHand).score
-    return if (score < 0) 0 else if (score == 0) 3 else 6
-}
 
 fun main() {
+    operator fun String.component1() = this[0]
+    operator fun String.component2() = this[1]
+    operator fun String.component3() = this[2]
+
+
     fun part1(input: List<String>): Int {
-        return input.sumOf { roundScore(it) }
+        fun shapeScore(shape: Char) = (shape - 'X' + 1)
+
+        fun resultScore(theirShape: Char, myShape: Char): Int {
+            return when (theirShape to myShape) {
+                'B' to 'X', 'C' to 'Y', 'A' to 'Z' -> 0
+                'A' to 'X', 'B' to 'Y', 'C' to 'Z' -> 3
+                'C' to 'X', 'A' to 'Y', 'B' to 'Z' -> 6
+                else -> error("Check you inputs")
+            }
+        }
+        return input.sumOf { round ->
+            val (theirShape, _, myShape) = round
+            shapeScore(myShape) + resultScore(theirShape, myShape)
+        }
     }
 
     fun part2(input: List<String>): Int {
-        TODO()
+        fun shapeScore(theirShape: Char, desiredResult: Char): Int {
+            return when (theirShape to desiredResult) {
+                'A' to 'Y', 'B' to 'X', 'C' to 'Z' -> 1
+                'B' to 'Y', 'C' to 'X', 'A' to 'Z' -> 2
+                'C' to 'Y', 'A' to 'X', 'B' to 'Z' -> 3
+                else -> error("Check you inputs")
+            }
+        }
+
+        fun resultScore(result: Char) = (result - 'X') * 3
+
+        return input.sumOf { round ->
+            val (theirShape, _, result) = round
+            shapeScore(theirShape, result) + resultScore(result)
+        }
     }
 
     val input = readInputAsList("Day02Input")
